@@ -1,0 +1,6 @@
+-I
+${VULKAN_INCLUDE_PATH}
+-I
+.\glfw\include
+-I
+.\include
