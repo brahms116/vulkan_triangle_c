@@ -4,7 +4,8 @@
 
 
 typedef struct {
-  VkInstance instance;
+  VkInstance *pInstance;
+  VkSurfaceKHR *pSurface;
 } CleanupArgs;
 
 void cleanup(CleanupArgs* args);
