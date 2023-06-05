@@ -11,8 +11,8 @@ typedef struct {
   uint32_t presentModesLength;
 } SwapchainSupportDetails;
 
-SwapchainSupportDetails querySwapchainSupport(VkPhysicalDevice *pDevice,
-                                              VkSurfaceKHR *pSurface);
+SwapchainSupportDetails querySwapchainSupport(const VkPhysicalDevice *pDevice,
+                                              const VkSurfaceKHR *pSurface);
 
 void cleanupSwapchainSupportDetails(SwapchainSupportDetails *pDetails);
 
@@ -32,7 +32,7 @@ typedef struct {
   uint32_t isPresentFamilyFound;
 } QueueFamilyIndices;
 
-QueueFamilyIndices findQueueFamilies(VkPhysicalDevice *pDevice,
-                                     VkSurfaceKHR *pSurface);
+QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice *pDevice,
+                                     const VkSurfaceKHR *pSurface);
 
 #endif // PHYSICALDEVICE_H
