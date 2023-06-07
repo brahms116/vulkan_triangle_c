@@ -19,7 +19,7 @@ void cleanupSwapchainSupportDetails(SwapchainSupportDetails *pDetails);
 typedef struct {
   VkInstance *pInstance;
   VkSurfaceKHR *pSurface;
-  char **ppDeviceExtensions;
+  const char **ppDeviceExtensions;
   uint32_t deviceExtensionCount;
 } PhysicalDeviceArgs;
 

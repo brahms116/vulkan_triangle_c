@@ -1,17 +1,17 @@
 #include "vulkan/vulkan_core.h"
 #include <physicalDevice.h>
-#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-int checkPhsyicalDeviceExtensionSupport(const VkPhysicalDevice *pPhsyicalDevice,
+int checkPhysicalDeviceExtensionSupport(const VkPhysicalDevice *pPhsyicalDevice,
                                         const char **ppPhsyicalDeviceExtensions,
                                         const uint32_t physicalExtensionCount) {
 
   // Query the number of extensions supported by the physical device
   uint32_t supportedExtensionCount = 0;
-  vkEnumerateDeviceExtensionProperties(*pPhsyicalDevice, NULL, &supportedExtensionCount,
-                                       NULL);
+  vkEnumerateDeviceExtensionProperties(*pPhsyicalDevice, NULL,
+                                       &supportedExtensionCount, NULL);
 
   // If there are no extensions supported by the physical device, return 0
   if (supportedExtensionCount == 0) {
@@ -21,8 +21,8 @@ int checkPhsyicalDeviceExtensionSupport(const VkPhysicalDevice *pPhsyicalDevice,
   VkExtensionProperties *pProperties = (VkExtensionProperties *)malloc(
       sizeof(VkExtensionProperties) * supportedExtensionCount);
 
-  vkEnumerateDeviceExtensionProperties(*pPhsyicalDevice, NULL, &supportedExtensionCount,
-                                       pProperties);
+  vkEnumerateDeviceExtensionProperties(*pPhsyicalDevice, NULL,
+                                       &supportedExtensionCount, pProperties);
 
   // Loop through all the required extensions and check if they are supported
   for (int i = 0; i < physicalExtensionCount; i++) {
@@ -61,16 +61,31 @@ int isPhysicalDeviceSuitable(const VkPhysicalDevice *pPhysicalDevice,
   // Query for present and graphics queue support
   QueueFamilyIndices indices = findQueueFamilies(pPhysicalDevice, pSurface);
 
-  int queuesPresent = indices.isGraphicsFamilyFound &&
-                      indices.isPresentFamilyFound;
+  int queuesPresent =
+      indices.isGraphicsFamilyFound && indices.isPresentFamilyFound;
+
+  if (!queuesPresent) {
+    return 0;
+  }
 
   // Check swapchainSupport
   SwapchainSupportDetails details =
       querySwapchainSupport(pPhysicalDevice, pSurface);
 
-  int swapchainAdequate = details.formatsLength  && details.presentModesLength;
+  int swapchainAdequate = details.formatsLength && details.presentModesLength;
 
+  if (!swapchainAdequate) {
+    return 0;
+  }
 
+  // Check for extensions support
+
+  int extensionsSupported = checkPhysicalDeviceExtensionSupport(
+      pPhysicalDevice, ppPhsyicalDeviceExtensions, physicalExtensionCount);
+
+  if (!extensionsSupported) {
+    return 0;
+  }
 
   return 1;
 }
@@ -85,7 +100,7 @@ void cleanUpSwapchainSupportDetails(SwapchainSupportDetails *pDetails) {
 }
 
 SwapchainSupportDetails
-querySupportchainSupport(const VkPhysicalDevice *pPhysicalDevice,
+querySwapchainSupport(const VkPhysicalDevice *pPhysicalDevice,
                          const VkSurfaceKHR *pSurface) {
 
   SwapchainSupportDetails details;
@@ -130,7 +145,31 @@ querySupportchainSupport(const VkPhysicalDevice *pPhysicalDevice,
 
 int pickPhysicalDevice(PhysicalDeviceArgs *pArgs, VkPhysicalDevice *outDevice) {
 
-  return 0;
+  uint32_t deviceCount = 0;
+  vkEnumeratePhysicalDevices(*pArgs->pInstance, &deviceCount, NULL);
+
+  if (deviceCount == 0) {
+    return 1;
+  }
+
+  VkPhysicalDevice *pDevices = malloc(deviceCount * sizeof(VkPhysicalDevice));
+
+  vkEnumeratePhysicalDevices(*pArgs->pInstance, &deviceCount, pDevices);
+
+  for (int i = 0; i < deviceCount; i++) {
+    if (isPhysicalDeviceSuitable(&pDevices[i], pArgs->ppDeviceExtensions,
+                                 pArgs->deviceExtensionCount,
+                                 pArgs->pSurface)) {
+      *outDevice = pDevices[i];
+      free(pDevices);
+      return 0;
+    }
+  }
+
+  // No physical devices were suitable
+  free(pDevices);
+  fprintf(stderr, "No suitable physical devices found\n");
+  return 1;
 }
 
 QueueFamilyIndices findQueueFamilies(const VkPhysicalDevice *pDevice,

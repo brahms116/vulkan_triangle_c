@@ -17,6 +17,8 @@ add_executable(${PROJECT_NAME}
   src/main.c
   src/cleanup.c
   src/instance.c
+  src/glfwSetup.c
+  src/physicalDevice.c
 )
 
 target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan glfw)
