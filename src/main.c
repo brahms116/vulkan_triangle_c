@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <glfwSetup.h>
 #include <physicalDevice.h>
+#include <device.h>
 
 int main() {
 
@@ -48,10 +49,30 @@ int main() {
     return 1;
   }
 
+
+  // Device and queues
+  VkDevice device;
+
+  VkQueue graphicsQueue;
+  VkQueue presentQueue;
+
+  DeviceArgs deviceArgs = {
+      .pPhysicalDevice = &physicalDevice,
+      .pSurface = &surface,
+      .ppPhysicalDeviceExtensions = physicalDeviceExtensions,
+      .physicalDeviceExtensionCount = 1,
+  };
+
+  if (createDevice(&deviceArgs, &device, &graphicsQueue, &presentQueue)) {
+    fprintf(stderr, "Failed to create logical device\n");
+    return 1;
+  }
+
   // Cleanup
   CleanupArgs args = {
       .pInstance = &instance,
       .pSurface = &surface,
+      .pDevice = &device
   };
 
   cleanup(&args);

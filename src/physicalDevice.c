@@ -101,7 +101,7 @@ void cleanUpSwapchainSupportDetails(SwapchainSupportDetails *pDetails) {
 
 SwapchainSupportDetails
 querySwapchainSupport(const VkPhysicalDevice *pPhysicalDevice,
-                         const VkSurfaceKHR *pSurface) {
+                      const VkSurfaceKHR *pSurface) {
 
   SwapchainSupportDetails details;
 
