@@ -5,6 +5,8 @@
 #include <glfwSetup.h>
 #include <physicalDevice.h>
 #include <device.h>
+#include <stdlib.h>
+#include <swapchain.h>
 
 int main() {
 
@@ -67,6 +69,32 @@ int main() {
     fprintf(stderr, "Failed to create logical device\n");
     return 1;
   }
+
+  VkFormat swapchainFormat;
+  VkExtent2D swapchainExtent;
+  VkSwapchainKHR swapchain;
+
+  SwapchainArgs swapchainArgs = {
+      .pPhysicalDevice = &physicalDevice,
+      .pDevice = &device,
+      .pSurface = &surface,
+  };
+
+  if (createSwapchain(&swapchainArgs, &swapchain, &swapchainExtent, &swapchainFormat)) {
+    fprintf(stderr, "Failed to create swapchain\n");
+    return 1;
+  }
+
+  // Retreive the number of images in the swapchain to malloc the images and image views
+  uint32_t swapchainImageCount;
+  vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, NULL);
+
+  VkImage* pSwapchainImages = malloc(sizeof(VkImage) * swapchainImageCount);
+  vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, pSwapchainImages);
+
+  VkImageView* pSwapchainImageViews = malloc(sizeof(VkImageView) * swapchainImageCount);
+
+  // TODO Cleanup swapchain and image views
 
   // Cleanup
   CleanupArgs args = {

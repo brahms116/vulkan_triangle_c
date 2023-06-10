@@ -20,6 +20,7 @@ add_executable(${PROJECT_NAME}
   src/glfwSetup.c
   src/physicalDevice.c
   src/device.c
+  src/swapchain.c
 )
 
 target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan glfw)
