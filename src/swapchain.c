@@ -1,3 +1,4 @@
+#include "vulkan/vulkan_core.h"
 #include <physicalDevice.h>
 #include <stdio.h>
 #include <swapchain.h>
@@ -148,5 +149,43 @@ int createSwapchain(SwapchainArgs *pArgs, VkSwapchainKHR *outSwapchain,
   *outImageFormat = surfaceFormat.format;
   *outExtent = extent;
 
+  return 0;
+}
+
+int createSwapchainImageViews(ImageViewArgs *pArgs, VkImageView *outSwapchainImageViews){
+  VkComponentMapping components = {
+    .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+    .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+    .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+    .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+  };
+
+  VkImageSubresourceRange subresourceRange = {
+    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+    .baseMipLevel = 0,
+    .levelCount = 1,
+    .baseArrayLayer = 0,
+    .layerCount = 1,
+  };
+
+
+  for (int i = 0; i < pArgs->swapchainImageViewsCount; i++) {
+    VkImageViewCreateInfo createInfo = {
+        .sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO,
+        .pNext = NULL,
+        .flags = 0,
+        .image = pArgs->pSwapchainImages[i],
+        .viewType = VK_IMAGE_VIEW_TYPE_2D,
+        .format = *pArgs->pImageFormat,
+        .components = components,
+        .subresourceRange = subresourceRange,
+    };
+
+    if (vkCreateImageView(*pArgs->pDevice, &createInfo, NULL,
+                          &outSwapchainImageViews[i]) != VK_SUCCESS) {
+      fprintf(stderr, "Failed to create image view\n");
+      return 1;
+    }
+  }
   return 0;
 }

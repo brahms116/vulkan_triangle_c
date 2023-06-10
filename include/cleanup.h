@@ -4,6 +4,9 @@
 
 
 typedef struct {
+  VkImageView *pSwapchainImageViews;
+  int swapchainImageViewsCount;
+  VkSwapchainKHR *pSwapchain;
   VkInstance *pInstance;
   VkSurfaceKHR *pSurface;
   VkDevice *pDevice;

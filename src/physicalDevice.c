@@ -90,7 +90,7 @@ int isPhysicalDeviceSuitable(const VkPhysicalDevice *pPhysicalDevice,
   return 1;
 }
 
-void cleanUpSwapchainSupportDetails(SwapchainSupportDetails *pDetails) {
+void cleanupSwapchainSupportDetails(SwapchainSupportDetails *pDetails) {
   if (pDetails == NULL) {
     return;
   }

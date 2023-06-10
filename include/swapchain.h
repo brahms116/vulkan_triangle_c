@@ -12,4 +12,15 @@ typedef struct {
 int createSwapchain(SwapchainArgs *pArgs, VkSwapchainKHR *outSwapchain,
                     VkExtent2D *outExtent, VkFormat *outImageFormat);
 
+typedef struct {
+  int swapchainImageViewsCount;
+  const VkDevice *pDevice;
+  const VkSwapchainKHR *pSwapchain;
+  const VkImage *pSwapchainImages;
+  VkFormat *pImageFormat;
+} ImageViewArgs;
+
+int createSwapchainImageViews(ImageViewArgs *pArgs,
+                              VkImageView *outSwapchainImageViews);
+
 #endif // SWAPCHAIN_H

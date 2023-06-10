@@ -94,10 +94,24 @@ int main() {
 
   VkImageView* pSwapchainImageViews = malloc(sizeof(VkImageView) * swapchainImageCount);
 
-  // TODO Cleanup swapchain and image views
+  ImageViewArgs imageViewArgs = {
+      .pDevice = &device,
+      .pSwapchainImages = pSwapchainImages,
+      .swapchainImageViewsCount = swapchainImageCount,
+      .pImageFormat = &swapchainFormat,
+  };
+
+  if (createSwapchainImageViews(&imageViewArgs, pSwapchainImageViews)) {
+    fprintf(stderr, "Failed to create swapchain image views\n");
+    return 1;
+  }
+  
 
   // Cleanup
   CleanupArgs args = {
+      .pSwapchainImageViews = pSwapchainImageViews,
+      .swapchainImageViewsCount = swapchainImageCount,
+      .pSwapchain = &swapchain,
       .pInstance = &instance,
       .pSurface = &surface,
       .pDevice = &device
