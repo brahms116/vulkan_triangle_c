@@ -5,7 +5,6 @@ project(VulkanTriangle C)
 set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
 set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "" FORCE)
 
 add_subdirectory(glfw)
 
@@ -21,6 +20,11 @@ add_executable(${PROJECT_NAME}
   src/physicalDevice.c
   src/device.c
   src/swapchain.c
+  src/pipeline.c
+  src/shader.c
+  src/framebuffer.c
+  src/command.c
+  src/draw.c
 )
 
 target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan glfw)
