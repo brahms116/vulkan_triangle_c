@@ -5,18 +5,18 @@
 
 int createVulkanInstance(VkInstance *outInstance) {
 
-  const char *layers[1] = {"VK_LAYER_KHRONOS_validation"};
+  const char *ppLayers[1] = {"VK_LAYER_KHRONOS_validation"};
 
   uint32_t layerCount = 0;
   vkEnumerateInstanceLayerProperties(&layerCount, NULL);
 
-  VkLayerProperties *availableLayers =
+  VkLayerProperties *pAvailableLayers =
       malloc(sizeof(VkLayerProperties) * layerCount);
-  vkEnumerateInstanceLayerProperties(&layerCount, availableLayers);
+  vkEnumerateInstanceLayerProperties(&layerCount, pAvailableLayers);
 
   int layerFound = 0;
   for (uint32_t i = 0; i < layerCount; i++) {
-    if (strcmp(layers[0], availableLayers[i].layerName) == 0) {
+    if (strcmp(ppLayers[0], pAvailableLayers[i].layerName) == 0) {
       layerFound = 1;
       break;
     }
@@ -46,7 +46,7 @@ int createVulkanInstance(VkInstance *outInstance) {
       .enabledExtensionCount = glfwExtensionCount,
       .ppEnabledExtensionNames = glfwExtensions,
       .enabledLayerCount = 1,
-      .ppEnabledLayerNames = layers,
+      .ppEnabledLayerNames = ppLayers,
   };
 
   VkResult result = vkCreateInstance(&createInfo, NULL, outInstance);

@@ -96,16 +96,16 @@ int createGraphicsPipeline(GraphicsPipelineArgs *pArgs,
       .module = fragShaderModule,
       .pName = "main"};
 
-  VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo,
+  VkPipelineShaderStageCreateInfo pShaderStages[] = {vertShaderStageInfo,
                                                     fragShaderStageInfo};
 
-  VkDynamicState dynamicStates[] = {VK_DYNAMIC_STATE_SCISSOR,
+  VkDynamicState pDynamicStates[] = {VK_DYNAMIC_STATE_SCISSOR,
                                     VK_DYNAMIC_STATE_VIEWPORT};
 
   VkPipelineDynamicStateCreateInfo dynamicStateInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
       .dynamicStateCount = 2,
-      .pDynamicStates = dynamicStates};
+      .pDynamicStates = pDynamicStates};
 
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
@@ -169,7 +169,7 @@ int createGraphicsPipeline(GraphicsPipelineArgs *pArgs,
   VkGraphicsPipelineCreateInfo createInfo = {
       .sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO,
       .stageCount = 2,
-      .pStages = shaderStages,
+      .pStages = pShaderStages,
       .pVertexInputState = &vertexInputInfo,
       .pInputAssemblyState = &inputAssemblyInfo,
       .pViewportState = &viewportInfo,

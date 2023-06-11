@@ -39,14 +39,14 @@ int main() {
   // Physical Device
   VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
 
-  const char *physicalDeviceExtensions[] = {
+  const char *ppPhysicalDeviceExtensions[] = {
       VK_KHR_SWAPCHAIN_EXTENSION_NAME,
   };
 
   PhysicalDeviceArgs physicalDeviceArgs = {
       .pInstance = &instance,
       .pSurface = &surface,
-      .ppDeviceExtensions = physicalDeviceExtensions,
+      .ppDeviceExtensions = ppPhysicalDeviceExtensions,
       .deviceExtensionCount = 1,
   };
 
@@ -64,7 +64,7 @@ int main() {
   DeviceArgs deviceArgs = {
       .pPhysicalDevice = &physicalDevice,
       .pSurface = &surface,
-      .ppPhysicalDeviceExtensions = physicalDeviceExtensions,
+      .ppPhysicalDeviceExtensions = ppPhysicalDeviceExtensions,
       .physicalDeviceExtensionCount = 1,
   };
 

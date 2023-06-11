@@ -4,13 +4,13 @@
 
 int createFramebuffers(FramebufferArgs *pArgs, VkFramebuffer *outFramebuffers) {
   for (int i = 0; i < pArgs->imageViewsCount; i++) {
-    VkImageView attachments[] = {pArgs->pImageViews[i]};
+    VkImageView pAttachments[] = {pArgs->pImageViews[i]};
 
     VkFramebufferCreateInfo createInfo = {
         .sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
         .renderPass = *pArgs->pRenderPass,
         .attachmentCount = 1,
-        .pAttachments = attachments,
+        .pAttachments = pAttachments,
         .width = pArgs->pExtent->width,
         .height = pArgs->pExtent->height,
         .layers = 1};

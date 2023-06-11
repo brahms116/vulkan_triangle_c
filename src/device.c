@@ -22,7 +22,7 @@ int createDevice(DeviceArgs *args, VkDevice *outDevice, VkQueue *outGraphicsQueu
     .pQueuePriorities = &queuePriority
   };
 
-  VkDeviceQueueCreateInfo queueCreateInfos[] = {graphicsQueuecreateInfo, presentQueueCreateInfo};
+  VkDeviceQueueCreateInfo pQueueCreateInfos[] = {graphicsQueuecreateInfo, presentQueueCreateInfo};
 
   // The physical device features needed
   VkPhysicalDeviceFeatures physicalDeviceFeatures = {
@@ -33,7 +33,7 @@ int createDevice(DeviceArgs *args, VkDevice *outDevice, VkQueue *outGraphicsQueu
   VkDeviceCreateInfo createInfo = {
     .sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
     .queueCreateInfoCount = 2,
-    .pQueueCreateInfos = queueCreateInfos,
+    .pQueueCreateInfos = pQueueCreateInfos,
     .enabledExtensionCount = args->physicalDeviceExtensionCount,
     .ppEnabledExtensionNames = args->ppPhysicalDeviceExtensions,
     .pEnabledFeatures = &physicalDeviceFeatures
