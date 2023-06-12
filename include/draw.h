@@ -17,9 +17,10 @@ typedef struct {
   const VkQueue *pGraphicsQueue;
   const VkQueue *pPresentQueue;
   const VkCommandBuffer *pCommandBuffer;
-  VkSemaphore *pImageAvailableSemaphore;
-  VkSemaphore *pRenderFinishedSemaphore;
-  VkFence *pInFlightFence;
+  VkSemaphore *pImageAvailableSemaphores;
+  VkSemaphore *pRenderFinishedSemaphores;
+  VkFence *pInFlightFences;
+  int currentFrame;
 } DrawFrameArgs;
 
 int drawFrame(DrawFrameArgs *pArgs);

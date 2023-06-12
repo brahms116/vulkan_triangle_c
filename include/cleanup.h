@@ -16,6 +16,9 @@ typedef struct {
   VkRenderPass *pRenderPass;
   VkPipelineLayout *pPipelineLayout;
   VkPipeline *pGraphicsPipeline;
+  VkSemaphore *pImageAvailableSemaphores;
+  VkSemaphore *pRenderFinishedSemaphores;
+  VkFence *pInFlightFences;
 } CleanupArgs;
 
 void cleanup(CleanupArgs* args);

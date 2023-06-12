@@ -5,6 +5,7 @@
 #include <ext.h>
 #include <framebuffer.h>
 #include <glfwSetup.h>
+#include <global.h>
 #include <instance.h>
 #include <physicalDevice.h>
 #include <pipeline.h>
@@ -171,64 +172,81 @@ int main() {
     return 1;
   }
 
-  VkCommandBuffer cmdBuffer;
+  VkCommandBuffer pCmdBuffers =
+      malloc(sizeof(VkCommandBuffer) * MAX_FRAMES_IN_FLIGHT);
 
   CommandBufferArgs commandBufferArgs = {
       .pDevice = &device,
       .pCommandPool = &commandPool,
   };
 
-  if (createCommandBuffer(&commandBufferArgs, &cmdBuffer)) {
+  if (createCommandBuffers(&commandBufferArgs, &pCmdBuffers)) {
     fprintf(stderr, "Failed to create command buffer\n");
     return 1;
   }
 
-  VkSemaphore imageAvailableSemaphore;
-  VkSemaphore renderFinishedSemaphore;
-  VkFence inFlightFence;
+  VkSemaphore *pImageAvailableSemaphores =
+      malloc(sizeof(VkSemaphore) * MAX_FRAMES_IN_FLIGHT);
+  VkSemaphore *pRenderFinishedSemaphores =
+      malloc(sizeof(VkSemaphore) * MAX_FRAMES_IN_FLIGHT);
+  VkFence *pInFlightFences = malloc(sizeof(VkFence) * MAX_FRAMES_IN_FLIGHT);
 
-  if (createSyncObjects(&device, &imageAvailableSemaphore,
-                        &renderFinishedSemaphore, &inFlightFence)) {
+  if (createSyncObjects(&device, pImageAvailableSemaphores,
+                        pRenderFinishedSemaphores, pInFlightFences)) {
     fprintf(stderr, "Failed to create sync objects\n");
     return 1;
   }
 
 
-  DrawFrameArgs frameArgs = {
-    .pDevice = &device,
-    .pSwapchain = &swapchain,
-    .pExtent = &swapchainExtent,
-    .pRenderPass = &renderPass,
-    .pFramebuffers = pSwapchainFramebuffers,
-    .pGraphicsPipeline = &graphicsPipeline,
-    .pGraphicsQueue = &graphicsQueue,
-    .pPresentQueue = &presentQueue,
-    .pCommandBuffer = &cmdBuffer,
-    .pImageAvailableSemaphore = &imageAvailableSemaphore,
-    .pRenderFinishedSemaphore = &renderFinishedSemaphore,
-    .pInFlightFence = &inFlightFence,
-  };
-
+  int currentFrame = 0;
 
   while (!glfwWindowShouldClose(window)) {
+    DrawFrameArgs frameArgs = {
+        .pDevice = &device,
+        .pSwapchain = &swapchain,
+        .pExtent = &swapchainExtent,
+        .pRenderPass = &renderPass,
+        .pFramebuffers = pSwapchainFramebuffers,
+        .pGraphicsPipeline = &graphicsPipeline,
+        .pGraphicsQueue = &graphicsQueue,
+        .pPresentQueue = &presentQueue,
+        .pCommandBuffer = &pCmdBuffers,
+        .pImageAvailableSemaphores = pImageAvailableSemaphores,
+        .pRenderFinishedSemaphores = pRenderFinishedSemaphores,
+        .pInFlightFences = pInFlightFences,
+        .currentFrame = currentFrame,
+    };
     glfwPollEvents();
     drawFrame(&frameArgs);
+    currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
   }
 
   vkDeviceWaitIdle(device);
 
   // Cleanup
-  CleanupArgs args = {.pRenderPass = &renderPass,
-                      .pFramebuffers = pSwapchainFramebuffers,
-                      .pCommandPool = &commandPool,
-                      .pGraphicsPipeline = &graphicsPipeline,
-                      .pSwapchainImageViews = pSwapchainImageViews,
-                      .swapchainImageViewsCount = swapchainImageCount,
-                      .pSwapchain = &swapchain,
-                      .pInstance = &instance,
-                      .pSurface = &surface,
-                      .pDevice = &device};
+  CleanupArgs args = {
+      .pRenderPass = &renderPass,
+      .pFramebuffers = pSwapchainFramebuffers,
+      .pCommandPool = &commandPool,
+      .pGraphicsPipeline = &graphicsPipeline,
+      .pSwapchainImageViews = pSwapchainImageViews,
+      .swapchainImageViewsCount = swapchainImageCount,
+      .pSwapchain = &swapchain,
+      .pInstance = &instance,
+      .pSurface = &surface,
+      .pDevice = &device,
+      .pImageAvailableSemaphores = pImageAvailableSemaphores,
+      .pRenderFinishedSemaphores = pRenderFinishedSemaphores,
+      .pInFlightFences = pInFlightFences,
+  };
 
   cleanup(&args);
+
+  free(pImageAvailableSemaphores);
+  free(pRenderFinishedSemaphores);
+  free(pInFlightFences);
+  free(pSwapchainFramebuffers);
+  free(pSwapchainImages);
+  free(pSwapchainImageViews);
   return 0;
 }

@@ -16,7 +16,7 @@ typedef struct {
   const VkCommandPool *pCommandPool;
 } CommandBufferArgs;
 
-int createCommandBuffer(CommandBufferArgs *pArgs, VkCommandBuffer* outCommandBuffer);
+int createCommandBuffers(CommandBufferArgs *pArgs, VkCommandBuffer* outCommandBuffer);
 
 typedef struct {
   const VkDevice *pDevice;

@@ -1,6 +1,7 @@
 #include <command.h>
 #include <physicalDevice.h>
 #include <stdio.h>
+#include <global.h>
 
 int createCommandPool(CommandPoolArgs *pArgs, VkCommandPool *outCommandPool) {
 
@@ -20,17 +21,18 @@ int createCommandPool(CommandPoolArgs *pArgs, VkCommandPool *outCommandPool) {
   return 0;
 }
 
-int createCommandBuffer(CommandBufferArgs *pArgs,
-                        VkCommandBuffer *outCommandBuffer) {
+int createCommandBuffers(CommandBufferArgs *pArgs,
+                        VkCommandBuffer *outCommandBuffers) {
+
   VkCommandBufferAllocateInfo allocateInfo = {
       .sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO,
       .commandPool = *pArgs->pCommandPool,
       .level = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
-      .commandBufferCount = 1};
+      .commandBufferCount = 2};
 
   if (vkAllocateCommandBuffers(*pArgs->pDevice, &allocateInfo,
-                               outCommandBuffer) != VK_SUCCESS) {
-    fprintf(stderr, "Failed to allocate command buffer\n");
+                               outCommandBuffers) != VK_SUCCESS) {
+    fprintf(stderr, "Failed to allocate command buffers \n");
     return 1;
   }
   return 0;
