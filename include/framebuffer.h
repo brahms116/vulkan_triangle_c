@@ -1,7 +1,6 @@
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
-#include<ext.h>
-
+#include <ext.h>
 
 typedef struct {
   const VkDevice *pDevice;
@@ -11,6 +10,29 @@ typedef struct {
   const VkExtent2D *pExtent;
 } FramebufferArgs;
 
-int createFramebuffers(FramebufferArgs *pArgs, VkFramebuffer* outFramebuffers);
+int createFramebuffers(FramebufferArgs *pArgs, VkFramebuffer *outFramebuffers);
+
+typedef struct {
+  const VkDevice *pDevice;
+  const VkRenderPass *pRenderPass;
+  const VkExtent2D *pSwapchainExtent;
+  const VkSwapchainKHR *pSwapchain;
+  const VkFormat *pSwapchainFormat;
+} FramebufferAndImagesArgs;
+
+int createFramebufferAndImages(FramebufferAndImagesArgs *pArgs,
+                               VkFramebuffer *outFramebuffers,
+                               VkImage *outImages, VkImageView *outImageViews,
+                               int *outSwapchainImageCount);
+
+typedef struct {
+  const VkDevice *pDevice;
+  VkFramebuffer *pFramebuffers;
+  VkImage *pImages;
+  VkImageView *pImageViews;
+  int swapchainImageCount;
+} CleanupFramebufferAndImagesArgs;
+
+void cleanupFramebufferAndImages(CleanupFramebufferAndImagesArgs *pArgs);
 
 #endif // FRAMEBUFFER_H

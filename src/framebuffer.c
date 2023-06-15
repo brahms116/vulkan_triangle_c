@@ -1,6 +1,7 @@
 #include "vulkan/vulkan_core.h"
 #include <framebuffer.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 int createFramebuffers(FramebufferArgs *pArgs, VkFramebuffer *outFramebuffers) {
   for (int i = 0; i < pArgs->imageViewsCount; i++) {
@@ -23,4 +24,18 @@ int createFramebuffers(FramebufferArgs *pArgs, VkFramebuffer *outFramebuffers) {
   }
 
   return 0;
+}
+
+
+void cleanupFramebufferAndImages(CleanupFramebufferAndImagesArgs *pArgs) {
+  for (int i = 0; i < pArgs->swapchainImageCount; i++) {
+    vkDestroyImageView(*pArgs->pDevice, pArgs->pImageViews[i], NULL);
+  }
+
+  for (int i = 0; i < pArgs->swapchainImageCount; i++) {
+    vkDestroyFramebuffer(*pArgs->pDevice, pArgs->pFramebuffers[i], NULL);
+  }
+
+  free(pArgs->pImageViews);
+  free(pArgs->pFramebuffers);
 }

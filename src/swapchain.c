@@ -189,3 +189,16 @@ int createSwapchainImageViews(ImageViewArgs *pArgs, VkImageView *outSwapchainIma
   }
   return 0;
 }
+
+int cleanupSwapchain(CleanUpSwapchainArgs *pArgs){
+  for (int i = 0; i < pArgs->swapchainImageCount; i++) {
+    vkDestroyImageView(*pArgs->pDevice, pArgs->pSwapchainImageViews[i], NULL);
+  }
+
+  for (int i = 0; i < pArgs->swapchainImageCount; i++) {
+    vkDestroyFramebuffer(*pArgs->pDevice, pArgs->pFramebuffers[i], NULL);
+  }
+
+  vkDestroySwapchainKHR(*pArgs->pDevice, *pArgs->pSwapchain, NULL);
+  return 0;
+}
