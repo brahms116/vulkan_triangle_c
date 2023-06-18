@@ -17,7 +17,7 @@ typedef struct {
   const VkDevice *pDevice;
   const VkSwapchainKHR *pSwapchain;
   const VkImage *pSwapchainImages;
-  VkFormat *pImageFormat;
+  const VkFormat *pImageFormat;
 } ImageViewArgs;
 
 int createSwapchainImageViews(ImageViewArgs *pArgs,

@@ -20,10 +20,15 @@ typedef struct {
   const VkFormat *pSwapchainFormat;
 } FramebufferAndImagesArgs;
 
-int createFramebufferAndImages(FramebufferAndImagesArgs *pArgs,
-                               VkFramebuffer *outFramebuffers,
-                               VkImage *outImages, VkImageView *outImageViews,
-                               int *outSwapchainImageCount);
+typedef struct {
+  int success;
+  VkFramebuffer *pFramebuffers;
+  VkImage *pImages;
+  VkImageView *pImageViews;
+  uint32_t swapchainImageCount;
+} FramebufferAndImages;
+
+FramebufferAndImages createFramebufferAndImages(FramebufferAndImagesArgs *pArgs);
 
 typedef struct {
   const VkDevice *pDevice;

@@ -223,13 +223,21 @@ int main() {
 
   vkDeviceWaitIdle(device);
 
-  // Cleanup
+  // New cleanup for framebuffer, images, and image views
+  CleanupFramebufferAndImagesArgs cleanupFramebufferArgs = {
+    .pDevice = &device,
+    .pFramebuffers = pSwapchainFramebuffers,
+    .swapchainImageCount = swapchainImageCount,
+    .pImageViews = pSwapchainImageViews,
+    .pImages = pSwapchainImages,
+  };
+  cleanupFramebufferAndImages(&cleanupFramebufferArgs);
+
+  // Old Cleanup
   CleanupArgs args = {
       .pRenderPass = &renderPass,
-      .pFramebuffers = pSwapchainFramebuffers,
       .pCommandPool = &commandPool,
       .pGraphicsPipeline = &graphicsPipeline,
-      .pSwapchainImageViews = pSwapchainImageViews,
       .swapchainImageViewsCount = swapchainImageCount,
       .pSwapchain = &swapchain,
       .pInstance = &instance,
@@ -245,8 +253,5 @@ int main() {
   free(pImageAvailableSemaphores);
   free(pRenderFinishedSemaphores);
   free(pInFlightFences);
-  free(pSwapchainFramebuffers);
-  free(pSwapchainImages);
-  free(pSwapchainImageViews);
   return 0;
 }

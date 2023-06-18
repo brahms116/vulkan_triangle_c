@@ -5,8 +5,6 @@
 
 typedef struct {
   VkCommandPool *pCommandPool;
-  VkFramebuffer *pFramebuffers;
-  VkImageView *pSwapchainImageViews;
   int swapchainImageViewsCount;
   VkSwapchainKHR *pSwapchain;
   VkInstance *pInstance;

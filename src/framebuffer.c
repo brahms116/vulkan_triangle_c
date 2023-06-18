@@ -2,6 +2,7 @@
 #include <framebuffer.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <swapchain.h>
 
 int createFramebuffers(FramebufferArgs *pArgs, VkFramebuffer *outFramebuffers) {
   for (int i = 0; i < pArgs->imageViewsCount; i++) {
@@ -26,16 +27,66 @@ int createFramebuffers(FramebufferArgs *pArgs, VkFramebuffer *outFramebuffers) {
   return 0;
 }
 
+FramebufferAndImages
+createFramebufferAndImages(FramebufferAndImagesArgs *pArgs) {
+  uint32_t swapchainImageCount = 0;
+
+  FramebufferAndImages failure = {.success = 0};
+
+  vkGetSwapchainImagesKHR(*pArgs->pDevice, *pArgs->pSwapchain,
+                          &swapchainImageCount, NULL);
+
+  VkImage *pSwapchainImages = malloc(sizeof(VkImage) * swapchainImageCount);
+
+  vkGetSwapchainImagesKHR(*pArgs->pDevice, *pArgs->pSwapchain,
+                          &swapchainImageCount, pSwapchainImages);
+
+  VkImageView *pImageViews = malloc(sizeof(VkImageView) * swapchainImageCount);
+
+  ImageViewArgs imageViewArgs = {.pDevice = pArgs->pDevice,
+                                 .pSwapchainImages = pSwapchainImages,
+                                 .swapchainImageViewsCount =
+                                     swapchainImageCount,
+                                 .pImageFormat = pArgs->pSwapchainFormat};
+
+  if (createSwapchainImageViews(&imageViewArgs, pImageViews)) {
+    fprintf(stderr, "Failed to create image views\n");
+    return failure;
+  }
+
+  VkFramebuffer *pFramebuffers =
+      malloc(sizeof(VkFramebuffer) * swapchainImageCount);
+
+  FramebufferArgs framebufferArgs = {
+    .pDevice = pArgs->pDevice,
+    .pRenderPass = pArgs->pRenderPass,
+    .pImageViews = pImageViews,
+    .imageViewsCount = swapchainImageCount,
+    .pExtent = pArgs->pSwapchainExtent
+  };
+
+  if (createFramebuffers(&framebufferArgs, pFramebuffers)) {
+    fprintf(stderr, "Failed to create framebuffers\n");
+    return failure;
+  }
+
+  return (FramebufferAndImages) {
+    .success = 1,
+    .pFramebuffers = pFramebuffers,
+    .pImageViews = pImageViews,
+    .swapchainImageCount = swapchainImageCount,
+    .pImages = pSwapchainImages
+  };
+}
 
 void cleanupFramebufferAndImages(CleanupFramebufferAndImagesArgs *pArgs) {
   for (int i = 0; i < pArgs->swapchainImageCount; i++) {
     vkDestroyImageView(*pArgs->pDevice, pArgs->pImageViews[i], NULL);
-  }
-
-  for (int i = 0; i < pArgs->swapchainImageCount; i++) {
     vkDestroyFramebuffer(*pArgs->pDevice, pArgs->pFramebuffers[i], NULL);
   }
 
+
+  free(pArgs->pImages);
   free(pArgs->pImageViews);
   free(pArgs->pFramebuffers);
 }
