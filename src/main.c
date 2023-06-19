@@ -90,30 +90,6 @@ int main() {
     return 1;
   }
 
-  // Retreive the number of images in the swapchain to malloc the images and
-  // image views
-  uint32_t swapchainImageCount;
-  vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount, NULL);
-
-  VkImage *pSwapchainImages = malloc(sizeof(VkImage) * swapchainImageCount);
-  vkGetSwapchainImagesKHR(device, swapchain, &swapchainImageCount,
-                          pSwapchainImages);
-
-  VkImageView *pSwapchainImageViews =
-      malloc(sizeof(VkImageView) * swapchainImageCount);
-
-  ImageViewArgs imageViewArgs = {
-      .pDevice = &device,
-      .pSwapchainImages = pSwapchainImages,
-      .swapchainImageViewsCount = swapchainImageCount,
-      .pImageFormat = &swapchainFormat,
-  };
-
-  if (createSwapchainImageViews(&imageViewArgs, pSwapchainImageViews)) {
-    fprintf(stderr, "Failed to create swapchain image views\n");
-    return 1;
-  }
-
   // Create the render pass
   VkRenderPass renderPass;
 
@@ -143,21 +119,15 @@ int main() {
     return 1;
   }
 
-  VkFramebuffer *pSwapchainFramebuffers =
-      malloc(sizeof(VkFramebuffer) * swapchainImageCount);
-
-  FramebufferArgs framebufferArgs = {
-      .pDevice = &device,
+  FramebufferAndImagesArgs framebufferAndImageArgs = {
       .pRenderPass = &renderPass,
-      .pImageViews = pSwapchainImageViews,
-      .imageViewsCount = swapchainImageCount,
-      .pExtent = &swapchainExtent,
+      .pDevice = &device,
+      .pSwapchainExtent = &swapchainExtent,
+      .pSwapchainFormat = &swapchainFormat,
   };
 
-  if (createFramebuffers(&framebufferArgs, pSwapchainFramebuffers)) {
-    fprintf(stderr, "Failed to create framebuffers\n");
-    return 1;
-  }
+  FramebufferAndImages framebufferAndImages =
+      createFramebufferAndImages(&framebufferAndImageArgs);
 
   VkCommandPool commandPool;
 
@@ -197,7 +167,6 @@ int main() {
     return 1;
   }
 
-
   int currentFrame = 0;
 
   while (!glfwWindowShouldClose(window)) {
@@ -206,7 +175,7 @@ int main() {
         .pSwapchain = &swapchain,
         .pExtent = &swapchainExtent,
         .pRenderPass = &renderPass,
-        .pFramebuffers = pSwapchainFramebuffers,
+        .pFramebuffers = framebufferAndImages.pFramebuffers,
         .pGraphicsPipeline = &graphicsPipeline,
         .pGraphicsQueue = &graphicsQueue,
         .pPresentQueue = &presentQueue,
@@ -225,11 +194,11 @@ int main() {
 
   // New cleanup for framebuffer, images, and image views
   CleanupFramebufferAndImagesArgs cleanupFramebufferArgs = {
-    .pDevice = &device,
-    .pFramebuffers = pSwapchainFramebuffers,
-    .swapchainImageCount = swapchainImageCount,
-    .pImageViews = pSwapchainImageViews,
-    .pImages = pSwapchainImages,
+      .pDevice = &device,
+      .pFramebuffers = framebufferAndImages.pFramebuffers,
+      .swapchainImageCount = framebufferAndImages.swapchainImageCount,
+      .pImageViews = framebufferAndImages.pImageViews,
+      .pImages = framebufferAndImages.pImages,
   };
   cleanupFramebufferAndImages(&cleanupFramebufferArgs);
 
@@ -238,7 +207,7 @@ int main() {
       .pRenderPass = &renderPass,
       .pCommandPool = &commandPool,
       .pGraphicsPipeline = &graphicsPipeline,
-      .swapchainImageViewsCount = swapchainImageCount,
+      .swapchainImageViewsCount = framebufferAndImages.swapchainImageCount,
       .pSwapchain = &swapchain,
       .pInstance = &instance,
       .pSurface = &surface,
