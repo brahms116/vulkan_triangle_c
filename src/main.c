@@ -129,6 +129,11 @@ int main() {
   FramebufferAndImages framebufferAndImages =
       createFramebufferAndImages(&framebufferAndImageArgs);
 
+  if (framebufferAndImages.success == 0) {
+    fprintf(stderr, "Failed to create framebuffer and images\n");
+    return 1;
+  }
+
   VkCommandPool commandPool;
 
   CommandPoolArgs commandPoolArgs = {
@@ -170,6 +175,7 @@ int main() {
   int currentFrame = 0;
 
   while (!glfwWindowShouldClose(window)) {
+    printf("Frame %d\n", currentFrame);
     DrawFrameArgs frameArgs = {
         .pDevice = &device,
         .pSwapchain = &swapchain,
@@ -218,7 +224,6 @@ int main() {
   };
 
   cleanup(&args);
-
   free(pImageAvailableSemaphores);
   free(pRenderFinishedSemaphores);
   free(pInFlightFences);
