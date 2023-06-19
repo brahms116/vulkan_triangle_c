@@ -36,6 +36,7 @@ createFramebufferAndImages(FramebufferAndImagesArgs *pArgs) {
   vkGetSwapchainImagesKHR(*pArgs->pDevice, *pArgs->pSwapchain,
                           &swapchainImageCount, NULL);
 
+
   VkImage *pSwapchainImages = malloc(sizeof(VkImage) * swapchainImageCount);
 
   vkGetSwapchainImagesKHR(*pArgs->pDevice, *pArgs->pSwapchain,
@@ -70,13 +71,15 @@ createFramebufferAndImages(FramebufferAndImagesArgs *pArgs) {
     return failure;
   }
 
-  return (FramebufferAndImages) {
+  FramebufferAndImages success = {
     .success = 1,
     .pFramebuffers = pFramebuffers,
     .pImageViews = pImageViews,
     .swapchainImageCount = swapchainImageCount,
     .pImages = pSwapchainImages
   };
+
+  return success;
 }
 
 void cleanupFramebufferAndImages(CleanupFramebufferAndImagesArgs *pArgs) {

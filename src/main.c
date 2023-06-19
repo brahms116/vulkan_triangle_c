@@ -124,10 +124,12 @@ int main() {
       .pDevice = &device,
       .pSwapchainExtent = &swapchainExtent,
       .pSwapchainFormat = &swapchainFormat,
+      .pSwapchain = &swapchain,
   };
 
   FramebufferAndImages framebufferAndImages =
       createFramebufferAndImages(&framebufferAndImageArgs);
+
 
   if (framebufferAndImages.success == 0) {
     fprintf(stderr, "Failed to create framebuffer and images\n");
@@ -175,7 +177,6 @@ int main() {
   int currentFrame = 0;
 
   while (!glfwWindowShouldClose(window)) {
-    printf("Frame %d\n", currentFrame);
     DrawFrameArgs frameArgs = {
         .pDevice = &device,
         .pSwapchain = &swapchain,
