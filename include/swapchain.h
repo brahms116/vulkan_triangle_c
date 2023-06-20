@@ -24,14 +24,32 @@ int createSwapchainImageViews(ImageViewArgs *pArgs,
                               VkImageView *outSwapchainImageViews);
 
 typedef struct {
+  const VkDevice *pDevice;
   VkFramebuffer *pFramebuffers;
   VkImageView *pSwapchainImageViews;
   VkSwapchainKHR *pSwapchain;
-  VkDevice *pDevice;
+  VkImage *pSwapchainImages;
   int swapchainImageCount;
 } CleanUpSwapchainArgs;
 
 int cleanupSwapchain(CleanUpSwapchainArgs *pArgs);
+
+typedef struct {
+  const VkDevice *pDevice;
+  const VkPhysicalDevice *pPhysicalDevice;
+  const VkSurfaceKHR *pSurface;
+  const VkRenderPass *pRenderPass;
+  GLFWwindow *pWindow;
+  VkFramebuffer *pFramebuffers;
+  VkImageView *pSwapchainImageViews;
+  VkSwapchainKHR *pSwapchain;
+  uint32_t *pSwapchainImageCount;
+  VkExtent2D *pExtent;
+  VkFormat *pImageFormat;
+  VkImage *pSwapchainImages;
+} RecreateSwapchainArgs;
+
+int recreateSwpachain(RecreateSwapchainArgs *pArgs);
 
 // Cleanup swapchain
 // 1. The framebuffers

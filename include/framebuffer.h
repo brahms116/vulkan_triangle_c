@@ -28,16 +28,16 @@ typedef struct {
   uint32_t swapchainImageCount;
 } FramebufferAndImages;
 
-FramebufferAndImages createFramebufferAndImages(FramebufferAndImagesArgs *pArgs);
+FramebufferAndImages createFramebuffersAndImages(FramebufferAndImagesArgs *pArgs);
 
 typedef struct {
   const VkDevice *pDevice;
   VkFramebuffer *pFramebuffers;
   VkImage *pImages;
   VkImageView *pImageViews;
-  int swapchainImageCount;
+  uint32_t swapchainImageCount;
 } CleanupFramebufferAndImagesArgs;
 
-void cleanupFramebufferAndImages(CleanupFramebufferAndImagesArgs *pArgs);
+void cleanupFramebuffersAndImages(CleanupFramebufferAndImagesArgs *pArgs);
 
 #endif // FRAMEBUFFER_H

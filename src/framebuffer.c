@@ -28,7 +28,7 @@ int createFramebuffers(FramebufferArgs *pArgs, VkFramebuffer *outFramebuffers) {
 }
 
 FramebufferAndImages
-createFramebufferAndImages(FramebufferAndImagesArgs *pArgs) {
+createFramebuffersAndImages(FramebufferAndImagesArgs *pArgs) {
   uint32_t swapchainImageCount = 0;
 
   FramebufferAndImages failure = {.success = 0};
@@ -82,7 +82,7 @@ createFramebufferAndImages(FramebufferAndImagesArgs *pArgs) {
   return success;
 }
 
-void cleanupFramebufferAndImages(CleanupFramebufferAndImagesArgs *pArgs) {
+void cleanupFramebuffersAndImages(CleanupFramebufferAndImagesArgs *pArgs) {
   for (int i = 0; i < pArgs->swapchainImageCount; i++) {
     vkDestroyImageView(*pArgs->pDevice, pArgs->pImageViews[i], NULL);
     vkDestroyFramebuffer(*pArgs->pDevice, pArgs->pFramebuffers[i], NULL);

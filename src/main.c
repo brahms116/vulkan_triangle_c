@@ -128,7 +128,7 @@ int main() {
   };
 
   FramebufferAndImages framebufferAndImages =
-      createFramebufferAndImages(&framebufferAndImageArgs);
+      createFramebuffersAndImages(&framebufferAndImageArgs);
 
 
   if (framebufferAndImages.success == 0) {
@@ -179,6 +179,13 @@ int main() {
   while (!glfwWindowShouldClose(window)) {
     DrawFrameArgs frameArgs = {
         .pDevice = &device,
+        .pPhysicalDevice = &physicalDevice,
+        .pSurface = &surface,
+        .pWindow = window,
+        .pSwapchainImageViews = framebufferAndImages.pImageViews,
+        .pSwapchainImageCount = &framebufferAndImages.swapchainImageCount,
+        .pImageFormat = &swapchainFormat,
+        .pSwapchainImages = framebufferAndImages.pImages,
         .pSwapchain = &swapchain,
         .pExtent = &swapchainExtent,
         .pRenderPass = &renderPass,
@@ -207,7 +214,7 @@ int main() {
       .pImageViews = framebufferAndImages.pImageViews,
       .pImages = framebufferAndImages.pImages,
   };
-  cleanupFramebufferAndImages(&cleanupFramebufferArgs);
+  cleanupFramebuffersAndImages(&cleanupFramebufferArgs);
 
   // Old Cleanup
   CleanupArgs args = {

@@ -1,4 +1,5 @@
 #include "vulkan/vulkan_core.h"
+#include <framebuffer.h>
 #include <physicalDevice.h>
 #include <stdio.h>
 #include <swapchain.h>
@@ -123,10 +124,11 @@ int createSwapchain(SwapchainArgs *pArgs, VkSwapchainKHR *outSwapchain,
       .oldSwapchain = VK_NULL_HANDLE,
   };
 
-  QueueFamilyIndices indices = findQueueFamilies(pArgs->pPhysicalDevice, pArgs->pSurface);
+  QueueFamilyIndices indices =
+      findQueueFamilies(pArgs->pPhysicalDevice, pArgs->pSurface);
 
   uint32_t pQueueFamilyIndices[2] = {indices.graphicsFamily,
-                                    indices.presentFamily};
+                                     indices.presentFamily};
 
   // If the graphics and present queues are different, then we need to use
   // concurrent mode to avoid ownership transfers for now.
@@ -152,22 +154,22 @@ int createSwapchain(SwapchainArgs *pArgs, VkSwapchainKHR *outSwapchain,
   return 0;
 }
 
-int createSwapchainImageViews(ImageViewArgs *pArgs, VkImageView *outSwapchainImageViews){
+int createSwapchainImageViews(ImageViewArgs *pArgs,
+                              VkImageView *outSwapchainImageViews) {
   VkComponentMapping components = {
-    .r = VK_COMPONENT_SWIZZLE_IDENTITY,
-    .g = VK_COMPONENT_SWIZZLE_IDENTITY,
-    .b = VK_COMPONENT_SWIZZLE_IDENTITY,
-    .a = VK_COMPONENT_SWIZZLE_IDENTITY,
+      .r = VK_COMPONENT_SWIZZLE_IDENTITY,
+      .g = VK_COMPONENT_SWIZZLE_IDENTITY,
+      .b = VK_COMPONENT_SWIZZLE_IDENTITY,
+      .a = VK_COMPONENT_SWIZZLE_IDENTITY,
   };
 
   VkImageSubresourceRange subresourceRange = {
-    .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
-    .baseMipLevel = 0,
-    .levelCount = 1,
-    .baseArrayLayer = 0,
-    .layerCount = 1,
+      .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+      .baseMipLevel = 0,
+      .levelCount = 1,
+      .baseArrayLayer = 0,
+      .layerCount = 1,
   };
-
 
   for (int i = 0; i < pArgs->swapchainImageViewsCount; i++) {
     VkImageViewCreateInfo createInfo = {
@@ -190,15 +192,57 @@ int createSwapchainImageViews(ImageViewArgs *pArgs, VkImageView *outSwapchainIma
   return 0;
 }
 
-int cleanupSwapchain(CleanUpSwapchainArgs *pArgs){
-  for (int i = 0; i < pArgs->swapchainImageCount; i++) {
-    vkDestroyImageView(*pArgs->pDevice, pArgs->pSwapchainImageViews[i], NULL);
-  }
-
-  for (int i = 0; i < pArgs->swapchainImageCount; i++) {
-    vkDestroyFramebuffer(*pArgs->pDevice, pArgs->pFramebuffers[i], NULL);
-  }
-
+int cleanupSwapchain(CleanUpSwapchainArgs *pArgs) {
+  CleanupFramebufferAndImagesArgs cleanupArgs = {
+      .pDevice = pArgs->pDevice,
+      .pImages = pArgs->pSwapchainImages,
+      .pImageViews = pArgs->pSwapchainImageViews,
+      .pFramebuffers = pArgs->pFramebuffers,
+      .swapchainImageCount = pArgs->swapchainImageCount,
+  };
+  cleanupFramebuffersAndImages(&cleanupArgs);
   vkDestroySwapchainKHR(*pArgs->pDevice, *pArgs->pSwapchain, NULL);
+  return 0;
+}
+
+int recreateSwapchain(RecreateSwapchainArgs *pArgs) {
+  vkDeviceWaitIdle(*pArgs->pDevice);
+
+  CleanUpSwapchainArgs cleanupArgs = {
+      .pDevice = pArgs->pDevice,
+      .pSwapchain = pArgs->pSwapchain,
+      .pSwapchainImages = pArgs->pSwapchainImages,
+      .pSwapchainImageViews = pArgs->pSwapchainImageViews,
+      .pFramebuffers = pArgs->pFramebuffers,
+      .swapchainImageCount = *pArgs->pSwapchainImageCount};
+
+  cleanupSwapchain(&cleanupArgs);
+
+  SwapchainArgs createArgs = {
+      .pDevice = pArgs->pDevice,
+      .pSurface = pArgs->pSurface,
+      .pPhysicalDevice = pArgs->pPhysicalDevice,
+      .pWindow = pArgs->pWindow,
+  };
+
+  createSwapchain(&createArgs, pArgs->pSwapchain, pArgs->pExtent,
+                  pArgs->pImageFormat);
+
+
+  FramebufferAndImagesArgs createFramebufferArgs = {
+    .pDevice = pArgs->pDevice,
+    .pSwapchain = pArgs->pSwapchain,
+    .pRenderPass = pArgs->pRenderPass,
+    .pSwapchainExtent = pArgs->pExtent,
+    .pSwapchainFormat = pArgs->pImageFormat,
+  };
+
+  FramebufferAndImages result = createFramebuffersAndImages(&createFramebufferArgs);
+
+  pArgs->pSwapchainImages = result.pImages;
+  pArgs->pSwapchainImageViews = result.pImageViews;
+  pArgs->pFramebuffers = result.pFramebuffers;
+  *pArgs->pSwapchainImageCount = result.swapchainImageCount;
+
   return 0;
 }

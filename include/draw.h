@@ -9,14 +9,21 @@ int createSyncObjects(const VkDevice *pDevice,
 
 typedef struct {
   const VkDevice *pDevice;
-  const VkSwapchainKHR *pSwapchain;
-  const VkExtent2D *pExtent;
   const VkRenderPass *pRenderPass;
-  const VkFramebuffer *pFramebuffers;
   const VkPipeline *pGraphicsPipeline;
   const VkQueue *pGraphicsQueue;
   const VkQueue *pPresentQueue;
   const VkCommandBuffer *pCommandBuffer;
+  const VkPhysicalDevice *pPhysicalDevice;
+  const VkSurfaceKHR *pSurface;
+  VkExtent2D *pExtent;
+  VkSwapchainKHR *pSwapchain;
+  VkFramebuffer *pFramebuffers;
+  GLFWwindow *pWindow;
+  VkImage *pSwapchainImages;
+  uint32_t *pSwapchainImageCount;
+  VkFormat *pImageFormat;
+  VkImageView *pSwapchainImageViews;
   VkSemaphore *pImageAvailableSemaphores;
   VkSemaphore *pRenderFinishedSemaphores;
   VkFence *pInFlightFences;

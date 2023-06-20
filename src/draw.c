@@ -2,6 +2,7 @@
 #include <draw.h>
 #include <global.h>
 #include <stdio.h>
+#include <swapchain.h>
 
 int createSyncObjects(const VkDevice *pDevice,
                       VkSemaphore *outImageAvailableSemaphores,
@@ -38,13 +39,32 @@ int drawFrame(DrawFrameArgs *pArgs) {
                   &pArgs->pInFlightFences[pArgs->currentFrame], VK_TRUE,
                   UINT64_MAX);
 
+  uint32_t imageIndex;
+  VkResult result = vkAcquireNextImageKHR(
+      *pArgs->pDevice, *pArgs->pSwapchain, UINT64_MAX,
+      pArgs->pImageAvailableSemaphores[pArgs->currentFrame], VK_NULL_HANDLE,
+      &imageIndex);
+
+  RecreateSwapchainArgs recreateSwapchainArgs = {
+      .pDevice = pArgs->pDevice,
+      .pPhysicalDevice = pArgs->pPhysicalDevice,
+      .pSurface = pArgs->pSurface,
+      .pWindow = pArgs->pWindow,
+      .pFramebuffers = pArgs->pFramebuffers,
+      .pSwapchainImageViews = pArgs->pSwapchainImageViews,
+      .pSwapchain = pArgs->pSwapchain,
+      .pSwapchainImageCount = pArgs->pSwapchainImageCount,
+      .pExtent = pArgs->pExtent,
+      .pImageFormat = pArgs->pImageFormat,
+      .pSwapchainImages = pArgs->pSwapchainImages,
+      .pRenderPass = pArgs->pRenderPass,
+  };
+
+  if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+  }
+
   vkResetFences(*pArgs->pDevice, 1,
                 &pArgs->pInFlightFences[pArgs->currentFrame]);
-
-  uint32_t imageIndex;
-  vkAcquireNextImageKHR(*pArgs->pDevice, *pArgs->pSwapchain, UINT64_MAX,
-                        pArgs->pImageAvailableSemaphores[pArgs->currentFrame],
-                        VK_NULL_HANDLE, &imageIndex);
 
   vkResetCommandBuffer(pArgs->pCommandBuffer[pArgs->currentFrame], 0);
 
