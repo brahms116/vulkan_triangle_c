@@ -173,8 +173,27 @@ int main() {
     fprintf(stderr, "Failed to create sync objects\n");
     return 1;
   }
-
   int currentFrame = 0;
+
+
+
+  RecreateSwapchainArgs recreateArgs = {
+    .pDevice = &device,
+    .pPhysicalDevice = &physicalDevice,
+    .pSurface = &surface,
+    .pWindow = window,
+    .pSwapchain = &swapchain,
+    .ppFramebuffers = &framebufferAndImages.pFramebuffers,
+    .ppSwapchainImageViews = &framebufferAndImages.pImageViews,
+    .pSwapchainImageCount = &framebufferAndImages.swapchainImageCount,
+    .ppSwapchainImages = &framebufferAndImages.pImages,
+    .pImageFormat = &swapchainFormat,
+    .pExtent = &swapchainExtent,
+    .pRenderPass = &renderPass
+  };
+
+  recreateSwapchain(&recreateArgs);
+
 
   while (!glfwWindowShouldClose(window)) {
     DrawFrameArgs frameArgs = {

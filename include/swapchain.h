@@ -40,16 +40,16 @@ typedef struct {
   const VkSurfaceKHR *pSurface;
   const VkRenderPass *pRenderPass;
   GLFWwindow *pWindow;
-  VkFramebuffer *pFramebuffers;
-  VkImageView *pSwapchainImageViews;
+  VkFramebuffer **ppFramebuffers;
+  VkImageView **ppSwapchainImageViews;
   VkSwapchainKHR *pSwapchain;
   uint32_t *pSwapchainImageCount;
   VkExtent2D *pExtent;
   VkFormat *pImageFormat;
-  VkImage *pSwapchainImages;
+  VkImage **ppSwapchainImages;
 } RecreateSwapchainArgs;
 
-int recreateSwpachain(RecreateSwapchainArgs *pArgs);
+int recreateSwapchain(RecreateSwapchainArgs *pArgs);
 
 // Cleanup swapchain
 // 1. The framebuffers

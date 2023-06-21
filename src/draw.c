@@ -50,17 +50,22 @@ int drawFrame(DrawFrameArgs *pArgs) {
       .pPhysicalDevice = pArgs->pPhysicalDevice,
       .pSurface = pArgs->pSurface,
       .pWindow = pArgs->pWindow,
-      .pFramebuffers = pArgs->pFramebuffers,
-      .pSwapchainImageViews = pArgs->pSwapchainImageViews,
+      .ppFramebuffers = &pArgs->pFramebuffers,
+      .ppSwapchainImageViews = &pArgs->pSwapchainImageViews,
       .pSwapchain = pArgs->pSwapchain,
       .pSwapchainImageCount = pArgs->pSwapchainImageCount,
       .pExtent = pArgs->pExtent,
       .pImageFormat = pArgs->pImageFormat,
-      .pSwapchainImages = pArgs->pSwapchainImages,
+      .ppSwapchainImages = &pArgs->pSwapchainImages,
       .pRenderPass = pArgs->pRenderPass,
   };
 
   if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+    /* recreateSwapchain(&recreateSwapchainArgs); */
+    return 0;
+  } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+    fprintf(stderr, "Failed to acquire swapchain image with VK_SUCCESS");
+    return 1;
   }
 
   vkResetFences(*pArgs->pDevice, 1,
@@ -118,7 +123,13 @@ int drawFrame(DrawFrameArgs *pArgs) {
       .pImageIndices = &imageIndex,
   };
 
-  if (vkQueuePresentKHR(*pArgs->pPresentQueue, &presentInfo) != VK_SUCCESS) {
+  VkResult presentResult =
+      vkQueuePresentKHR(*pArgs->pPresentQueue, &presentInfo);
+
+  if (presentResult == VK_ERROR_OUT_OF_DATE_KHR ||
+      presentResult == VK_SUBOPTIMAL_KHR) {
+    /* recreateSwapchain(&recreateSwapchainArgs); */
+  } else if (presentResult != VK_SUCCESS) {
     fprintf(stderr, "Failed to present swapchain image");
     return 1;
   }

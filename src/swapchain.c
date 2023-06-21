@@ -211,9 +211,9 @@ int recreateSwapchain(RecreateSwapchainArgs *pArgs) {
   CleanUpSwapchainArgs cleanupArgs = {
       .pDevice = pArgs->pDevice,
       .pSwapchain = pArgs->pSwapchain,
-      .pSwapchainImages = pArgs->pSwapchainImages,
-      .pSwapchainImageViews = pArgs->pSwapchainImageViews,
-      .pFramebuffers = pArgs->pFramebuffers,
+      .pSwapchainImages = *pArgs->ppSwapchainImages,
+      .pSwapchainImageViews = *pArgs->ppSwapchainImageViews,
+      .pFramebuffers = *pArgs->ppFramebuffers,
       .swapchainImageCount = *pArgs->pSwapchainImageCount};
 
   cleanupSwapchain(&cleanupArgs);
@@ -239,9 +239,9 @@ int recreateSwapchain(RecreateSwapchainArgs *pArgs) {
 
   FramebufferAndImages result = createFramebuffersAndImages(&createFramebufferArgs);
 
-  pArgs->pSwapchainImages = result.pImages;
-  pArgs->pSwapchainImageViews = result.pImageViews;
-  pArgs->pFramebuffers = result.pFramebuffers;
+  *pArgs->ppSwapchainImages = result.pImages;
+  *pArgs->ppSwapchainImageViews = result.pImageViews;
+  *pArgs->ppFramebuffers = result.pFramebuffers;
   *pArgs->pSwapchainImageCount = result.swapchainImageCount;
 
   return 0;
