@@ -206,6 +206,14 @@ int cleanupSwapchain(CleanUpSwapchainArgs *pArgs) {
 }
 
 int recreateSwapchain(RecreateSwapchainArgs *pArgs) {
+  int width = 0, height = 0;
+  glfwGetFramebufferSize(pArgs->pWindow, &width, &height);
+
+  while (height == 0 || width == 0) {
+    glfwGetFramebufferSize(pArgs->pWindow, &width, &height);
+    glfwWaitEvents();
+  }
+
   vkDeviceWaitIdle(*pArgs->pDevice);
 
   CleanUpSwapchainArgs cleanupArgs = {
@@ -228,16 +236,16 @@ int recreateSwapchain(RecreateSwapchainArgs *pArgs) {
   createSwapchain(&createArgs, pArgs->pSwapchain, pArgs->pExtent,
                   pArgs->pImageFormat);
 
-
   FramebufferAndImagesArgs createFramebufferArgs = {
-    .pDevice = pArgs->pDevice,
-    .pSwapchain = pArgs->pSwapchain,
-    .pRenderPass = pArgs->pRenderPass,
-    .pSwapchainExtent = pArgs->pExtent,
-    .pSwapchainFormat = pArgs->pImageFormat,
+      .pDevice = pArgs->pDevice,
+      .pSwapchain = pArgs->pSwapchain,
+      .pRenderPass = pArgs->pRenderPass,
+      .pSwapchainExtent = pArgs->pExtent,
+      .pSwapchainFormat = pArgs->pImageFormat,
   };
 
-  FramebufferAndImages result = createFramebuffersAndImages(&createFramebufferArgs);
+  FramebufferAndImages result =
+      createFramebuffersAndImages(&createFramebufferArgs);
 
   *pArgs->ppSwapchainImages = result.pImages;
   *pArgs->ppSwapchainImageViews = result.pImageViews;

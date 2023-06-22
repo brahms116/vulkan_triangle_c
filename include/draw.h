@@ -18,16 +18,17 @@ typedef struct {
   const VkSurfaceKHR *pSurface;
   VkExtent2D *pExtent;
   VkSwapchainKHR *pSwapchain;
-  VkFramebuffer *pFramebuffers;
+  VkFramebuffer **ppFramebuffers;
   GLFWwindow *pWindow;
-  VkImage *pSwapchainImages;
+  VkImage **ppSwapchainImages;
   uint32_t *pSwapchainImageCount;
   VkFormat *pImageFormat;
-  VkImageView *pSwapchainImageViews;
+  VkImageView **ppSwapchainImageViews;
   VkSemaphore *pImageAvailableSemaphores;
   VkSemaphore *pRenderFinishedSemaphores;
   VkFence *pInFlightFences;
   int currentFrame;
+  int *pWindowResized;
 } DrawFrameArgs;
 
 int drawFrame(DrawFrameArgs *pArgs);

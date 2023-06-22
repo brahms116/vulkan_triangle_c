@@ -13,10 +13,19 @@
 #include <stdlib.h>
 #include <swapchain.h>
 
+void glfwWindowSizeCallback(GLFWwindow *window, int width, int height) {
+  int *windowResized = glfwGetWindowUserPointer(window);
+  *windowResized = 1;
+}
+
 int main() {
+
+  int windowResized = 0;
 
   // Window
   GLFWwindow *window = setupGLFWWindow();
+  glfwSetWindowUserPointer(window, &windowResized);
+  glfwSetWindowSizeCallback(window, glfwWindowSizeCallback);
 
   if (glfwVulkanSupported() == GLFW_FALSE) {
     fprintf(stderr, "GLFW failed to find vulkan support\n");
@@ -130,7 +139,6 @@ int main() {
   FramebufferAndImages framebufferAndImages =
       createFramebuffersAndImages(&framebufferAndImageArgs);
 
-
   if (framebufferAndImages.success == 0) {
     fprintf(stderr, "Failed to create framebuffer and images\n");
     return 1;
@@ -175,22 +183,19 @@ int main() {
   }
   int currentFrame = 0;
 
-
-
   RecreateSwapchainArgs recreateArgs = {
-    .pDevice = &device,
-    .pPhysicalDevice = &physicalDevice,
-    .pSurface = &surface,
-    .pWindow = window,
-    .pSwapchain = &swapchain,
-    .ppFramebuffers = &framebufferAndImages.pFramebuffers,
-    .ppSwapchainImageViews = &framebufferAndImages.pImageViews,
-    .pSwapchainImageCount = &framebufferAndImages.swapchainImageCount,
-    .ppSwapchainImages = &framebufferAndImages.pImages,
-    .pImageFormat = &swapchainFormat,
-    .pExtent = &swapchainExtent,
-    .pRenderPass = &renderPass
-  };
+      .pDevice = &device,
+      .pPhysicalDevice = &physicalDevice,
+      .pSurface = &surface,
+      .pWindow = window,
+      .pSwapchain = &swapchain,
+      .ppFramebuffers = &framebufferAndImages.pFramebuffers,
+      .ppSwapchainImageViews = &framebufferAndImages.pImageViews,
+      .pSwapchainImageCount = &framebufferAndImages.swapchainImageCount,
+      .ppSwapchainImages = &framebufferAndImages.pImages,
+      .pImageFormat = &swapchainFormat,
+      .pExtent = &swapchainExtent,
+      .pRenderPass = &renderPass};
 
   recreateSwapchain(&recreateArgs);
 
@@ -201,14 +206,14 @@ int main() {
         .pPhysicalDevice = &physicalDevice,
         .pSurface = &surface,
         .pWindow = window,
-        .pSwapchainImageViews = framebufferAndImages.pImageViews,
+        .ppSwapchainImageViews = &framebufferAndImages.pImageViews,
         .pSwapchainImageCount = &framebufferAndImages.swapchainImageCount,
         .pImageFormat = &swapchainFormat,
-        .pSwapchainImages = framebufferAndImages.pImages,
+        .ppSwapchainImages = &framebufferAndImages.pImages,
         .pSwapchain = &swapchain,
         .pExtent = &swapchainExtent,
         .pRenderPass = &renderPass,
-        .pFramebuffers = framebufferAndImages.pFramebuffers,
+        .ppFramebuffers = &framebufferAndImages.pFramebuffers,
         .pGraphicsPipeline = &graphicsPipeline,
         .pGraphicsQueue = &graphicsQueue,
         .pPresentQueue = &presentQueue,
@@ -217,6 +222,7 @@ int main() {
         .pRenderFinishedSemaphores = pRenderFinishedSemaphores,
         .pInFlightFences = pInFlightFences,
         .currentFrame = currentFrame,
+        .pWindowResized = &windowResized,
     };
     glfwPollEvents();
     drawFrame(&frameArgs);

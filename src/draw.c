@@ -50,18 +50,18 @@ int drawFrame(DrawFrameArgs *pArgs) {
       .pPhysicalDevice = pArgs->pPhysicalDevice,
       .pSurface = pArgs->pSurface,
       .pWindow = pArgs->pWindow,
-      .ppFramebuffers = &pArgs->pFramebuffers,
-      .ppSwapchainImageViews = &pArgs->pSwapchainImageViews,
+      .ppFramebuffers = pArgs->ppFramebuffers,
+      .ppSwapchainImageViews = pArgs->ppSwapchainImageViews,
       .pSwapchain = pArgs->pSwapchain,
       .pSwapchainImageCount = pArgs->pSwapchainImageCount,
       .pExtent = pArgs->pExtent,
       .pImageFormat = pArgs->pImageFormat,
-      .ppSwapchainImages = &pArgs->pSwapchainImages,
+      .ppSwapchainImages = pArgs->ppSwapchainImages,
       .pRenderPass = pArgs->pRenderPass,
   };
 
   if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-    /* recreateSwapchain(&recreateSwapchainArgs); */
+    recreateSwapchain(&recreateSwapchainArgs);
     return 0;
   } else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
     fprintf(stderr, "Failed to acquire swapchain image with VK_SUCCESS");
@@ -77,7 +77,7 @@ int drawFrame(DrawFrameArgs *pArgs) {
       .pDevice = pArgs->pDevice,
       .pCommandBuffer = &pArgs->pCommandBuffer[pArgs->currentFrame],
       .pRenderPass = pArgs->pRenderPass,
-      .pSwapchainFramebuffers = pArgs->pFramebuffers,
+      .pSwapchainFramebuffers = *pArgs->ppFramebuffers,
       .pGraphicsPipeline = pArgs->pGraphicsPipeline,
       .pSwapchainExtent = pArgs->pExtent,
       .swapchainImageIndex = imageIndex,
@@ -127,8 +127,9 @@ int drawFrame(DrawFrameArgs *pArgs) {
       vkQueuePresentKHR(*pArgs->pPresentQueue, &presentInfo);
 
   if (presentResult == VK_ERROR_OUT_OF_DATE_KHR ||
-      presentResult == VK_SUBOPTIMAL_KHR) {
-    /* recreateSwapchain(&recreateSwapchainArgs); */
+      presentResult == VK_SUBOPTIMAL_KHR || *pArgs->pWindowResized) {
+    recreateSwapchain(&recreateSwapchainArgs);
+    *pArgs->pWindowResized = 0;
   } else if (presentResult != VK_SUCCESS) {
     fprintf(stderr, "Failed to present swapchain image");
     return 1;
