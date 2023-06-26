@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <swapchain.h>
+#include <vertex.h>
 
 void glfwWindowSizeCallback(GLFWwindow *window, int width, int height) {
   int *windowResized = glfwGetWindowUserPointer(window);
@@ -183,6 +184,20 @@ int main() {
   }
   int currentFrame = 0;
 
+  VkBuffer vertexBuffer;
+  VkDeviceMemory vertexBufferMemory;
+
+  uint32_t vertexBufferSize = (uint32_t)sizeof(Vertex) * 3;
+
+  VertexBufferArgs bufferArgs = {
+      .pDevice = &device,
+      .pSize = &vertexBufferSize,
+  };
+
+  if (createVertexBuffer(&bufferArgs, &vertexBuffer, &vertexBufferMemory)) {
+    fprintf(stderr, "Failed to create vertex buffer\n");
+    return 1;
+  }
 
   while (!glfwWindowShouldClose(window)) {
     DrawFrameArgs frameArgs = {
@@ -214,6 +229,13 @@ int main() {
   }
 
   vkDeviceWaitIdle(device);
+
+  CleanupVertexBufferArgs cleanupVertexBufferArgs = {
+      .pDevice = &device,
+      .pVertexBuffer = &vertexBuffer,
+  };
+
+  cleanupVertexBuffer(&cleanupVertexBufferArgs);
 
   // New cleanup for framebuffer, images, and image views
   CleanupFramebufferAndImagesArgs cleanupFramebufferArgs = {
@@ -253,7 +275,6 @@ int main() {
 // Investigate glm and how to use a C equivalent
 //
 
-
 // create vertex buffer function
 // - BufferCreateInfo
 // - VkCreateBuffer
@@ -263,7 +284,8 @@ int main() {
 //
 // Get the memory requirements for the buffer
 //
-// Find the correct memory type from the memory requirements and the memory properties which we need
+// Find the correct memory type from the memory requirements and the memory
+// properties which we need
 //
 // Do this by getting physical device memory properties
 //
