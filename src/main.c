@@ -183,22 +183,6 @@ int main() {
   }
   int currentFrame = 0;
 
-  RecreateSwapchainArgs recreateArgs = {
-      .pDevice = &device,
-      .pPhysicalDevice = &physicalDevice,
-      .pSurface = &surface,
-      .pWindow = window,
-      .pSwapchain = &swapchain,
-      .ppFramebuffers = &framebufferAndImages.pFramebuffers,
-      .ppSwapchainImageViews = &framebufferAndImages.pImageViews,
-      .pSwapchainImageCount = &framebufferAndImages.swapchainImageCount,
-      .ppSwapchainImages = &framebufferAndImages.pImages,
-      .pImageFormat = &swapchainFormat,
-      .pExtent = &swapchainExtent,
-      .pRenderPass = &renderPass};
-
-  recreateSwapchain(&recreateArgs);
-
 
   while (!glfwWindowShouldClose(window)) {
     DrawFrameArgs frameArgs = {
@@ -262,3 +246,37 @@ int main() {
   free(pInFlightFences);
   return 0;
 }
+
+// Modify the shader code to take in the vertex data
+
+// We need the vertex data
+// Investigate glm and how to use a C equivalent
+//
+
+
+// create vertex buffer function
+// - BufferCreateInfo
+// - VkCreateBuffer
+//
+// destroy the buffer when done
+//
+//
+// Get the memory requirements for the buffer
+//
+// Find the correct memory type from the memory requirements and the memory properties which we need
+//
+// Do this by getting physical device memory properties
+//
+// Then allocate the memory using vkAllocateMemory
+//
+// Bind the memory to the buffer using vkBindBufferMemory
+//
+// Clean up the memory using vkFreeMemory after destroying the buffer
+//
+// Map the memory created to a void* data using vkMapMemory
+//
+// Then memcopy the vertex data into the void pointer address
+//
+// Unmap the memory using vkUnmapMemory
+//
+// now bind the vertex buffer to the command using vkCmdBindVertexBuffers

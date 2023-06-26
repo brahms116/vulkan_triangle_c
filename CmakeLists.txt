@@ -25,6 +25,7 @@ add_executable(${PROJECT_NAME}
   src/framebuffer.c
   src/command.c
   src/draw.c
+  src/vertex.c
 )
 
 target_link_libraries(${PROJECT_NAME} Vulkan::Vulkan glfw)

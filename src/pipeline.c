@@ -1,6 +1,7 @@
 #include <pipeline.h>
 #include <shader.h>
 #include <stdio.h>
+#include <vertex.h>
 
 int createRenderPass(RenderPassArgs *pArgs, VkRenderPass *outRenderPass) {
 
@@ -97,20 +98,29 @@ int createGraphicsPipeline(GraphicsPipelineArgs *pArgs,
       .pName = "main"};
 
   VkPipelineShaderStageCreateInfo pShaderStages[] = {vertShaderStageInfo,
-                                                    fragShaderStageInfo};
+                                                     fragShaderStageInfo};
 
   VkDynamicState pDynamicStates[] = {VK_DYNAMIC_STATE_SCISSOR,
-                                    VK_DYNAMIC_STATE_VIEWPORT};
+                                     VK_DYNAMIC_STATE_VIEWPORT};
 
   VkPipelineDynamicStateCreateInfo dynamicStateInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
       .dynamicStateCount = 2,
       .pDynamicStates = pDynamicStates};
 
+  VkVertexInputBindingDescription bindingDescription =
+      getVertexBindingDescription();
+
+  VkVertexInputAttributeDescription attributeDescriptions[2] = {
+      getVertextPositionAttributeDescription(),
+      getVertexColorAttributeDescription()};
+
   VkPipelineVertexInputStateCreateInfo vertexInputInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-      .vertexBindingDescriptionCount = 0,
-      .vertexAttributeDescriptionCount = 0};
+      .vertexBindingDescriptionCount = 1,
+      .vertexAttributeDescriptionCount = 2,
+      .pVertexBindingDescriptions = &bindingDescription,
+      .pVertexAttributeDescriptions = attributeDescriptions};
 
   VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo = {
       .sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
